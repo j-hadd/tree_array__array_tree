@@ -91,12 +91,14 @@ class tree_array__array_tree {
 	 * searchInArrayGetInTree
 	 *
 	 * @param $ids An array of values to find
-	 * @param $ids_id_field [optional] the name of the field used in the research values array ($ids)
-	 * @param $id_field the name of the field used in data ($this->a)
-	 * @param $sort [optional] the field used to make sorting
-	 * @param $direction [optional] the sorting direction
+	 * @param $cfg [optional] the configuration options
 	 */
-	function searchInArrayGetInTree ($ids, $ids_id_field = 'id', $id_field = 'id', $sort = false, $direction = SORT_ASC) {
+	function searchInArrayGetInTree ($ids, $cfg = array()) {
+		$ids_id_field = isset($cfg['ids_id_field']) ? $cfg['ids_id_field'] : 'id'; /* the name of the field used in the research values array ($ids) */
+		$id_field = isset($cfg['id_field']) ? $cfg['id_field'] : 'id'; /* the name of the field used in data ($this->a) */
+		$sort = isset($cfg['sort']) ? $cfg['sort'] : false; /* the field used to make sorting */
+		$direction = isset($cfg['direction']) ? $cfg['direction'] : SORT_ASC; /* the sorting direction */
+		
 		$t = $this->searchInArray($ids, $ids_id_field, $id_field);
 		
 		$t = $this->treeFromArray(false, $t);

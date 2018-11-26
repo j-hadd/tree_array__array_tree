@@ -41,11 +41,11 @@ $_tree = $tree->getTree('name');
 echo '<pre>$tree = '; print_r($_tree); echo '</pre><hr>';
 
 $search = array(array('id' => 19), array('id' => 15),);
-$sub_tree = $tree->searchInArrayGetInTree($search);
+$sub_tree = $tree->searchInArrayGetInTree($search, array('sort' => 'name'));
 echo '<pre>$sub_tree = '; print_r($sub_tree); echo '</pre><hr>';
 
 $search = array(array('id' => 'lorem ipsum ...'),);
-$sub_tree = $tree->searchInArrayGetInTree($search, 'id', 'custom_field', 'name');
+$sub_tree = $tree->searchInArrayGetInTree($search, array('ids_id_field' => 'id', 'id_field' => 'custom_field'));
 echo '<pre>$sub_tree(lorem ipsum) = '; print_r($sub_tree); echo '</pre><hr>';
 
 $array = new array_from_tree($_tree);
