@@ -34,22 +34,22 @@ $db_data = array(
 shuffle($db_data);
 
 
-echo '<pre>$db_data = '; print_r($db_data); echo '</pre><hr>';
+echo '<pre style="max-height:150px;overflow:auto;">$db_data = '; print_r($db_data); echo '</pre><hr>';
 
 $tree = new tree_from_array($db_data);
 $_tree = $tree->getTree('name');
-echo '<pre>$tree = '; print_r($_tree); echo '</pre><hr>';
+echo '<pre style="max-height:150px;overflow:auto;">$tree = '; print_r($_tree); echo '</pre><hr>';
 
 $search = array(array('id' => 19), array('id' => 15),);
 $sub_tree = $tree->searchInArrayGetInTree($search, array('sort' => 'name'));
-echo '<pre>$sub_tree = '; print_r($sub_tree); echo '</pre><hr>';
+echo '<pre style="max-height:150px;overflow:auto;">$sub_tree = '; print_r($sub_tree); echo '</pre><hr>';
 
 $search = array(array('id' => 'lorem ipsum ...'),);
-$sub_tree = $tree->searchInArrayGetInTree($search, array('ids_id_field' => 'id', 'id_field' => 'custom_field'));
-echo '<pre>$sub_tree(lorem ipsum) = '; print_r($sub_tree); echo '</pre><hr>';
+$sub_tree = $tree->searchInArrayGetInTree($search, array('ids_id_field' => 'id', 'id_field' => 'custom_field', 'sort' => 'name'));
+echo '<pre style="max-height:1500px;overflow:auto;">$sub_tree(lorem ipsum) = '; print_r($sub_tree); echo '</pre><hr>';
 
 $array = new array_from_tree($_tree);
 $array = $array->getArray('name', SORT_DESC);
-echo '<pre>$array = '; print_r($array); echo '</pre>';
+echo '<pre style="max-height:150px;overflow:auto;">$array = '; print_r($array); echo '</pre>';
 
 ?>

@@ -150,10 +150,29 @@ class tree_array__array_tree {
 	 */
 	function getParents (&$array, $ids_id_field = 'id', $id_field = 'id') {
 		foreach ($array as $data) {
-			if ($data[$this->parent_field] > $this->parent_root_id) { 
+			if ($data[$this->parent_field] > $this->parent_root_id && !$this->alreadyInArray($array, $data[$this->parent_field])) { 
 				$array = array_merge($array, $this->searchInArray(array(array($ids_id_field => $data[$this->parent_field]),), $ids_id_field, $id_field)); 
 			}
 		}
+	}
+	
+	
+	
+	
+	
+	/**
+	 * alreadyInArray
+	 *
+	 * @param $array array to check
+	 * @param $_data the data to check for
+	 * @param $id_field the name of the field used in array
+	 */
+	function alreadyInArray ($array, $_data, $id_field = 'id') {
+		foreach ($array as $data) {
+			if ($data[$id_field] === $_data) { return true; }
+		}
+		
+		return false;
 	}
 	
 	
