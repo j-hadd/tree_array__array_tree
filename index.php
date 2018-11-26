@@ -20,12 +20,12 @@ $db_data = array(
 	array('id' => 6, 	'name' => '1.3', 		'parent' => 1, 'titi' => 'titi'),
 	array('id' => 2, 	'name' => '2', 			'parent' => 0,),
 	array('id' => 7, 	'name' => '2.1', 		'parent' => 2,),
-	array('id' => 8, 	'name' => '2.2', 		'parent' => 2,),
+	array('id' => 8, 	'name' => '2.2', 		'parent' => 2, 'custom_field' => 'dolor es ....',),
 	array('id' => 12, 	'name' => '2.2.1', 		'parent' => 8,),
 	array('id' => 3, 	'name' => '3', 			'parent' => 0,),
 	array('id' => 9, 	'name' => '3.1', 		'parent' => 3,),
 	array('id' => 15, 	'name' => '3.2', 		'parent' => 3,),
-	array('id' => 13, 	'name' => '3.2.1', 		'parent' => 15,),
+	array('id' => 13, 	'name' => '3.2.1', 		'parent' => 15, 'custom_field' => 'lorem ipsum ...',),
 	array('id' => 14, 	'name' => '3.3', 		'parent' => 3,),
 	//array('id' => 20, 'name' => '', 'parent' => 0,),
 	
@@ -43,6 +43,10 @@ echo '<pre>$tree = '; print_r($_tree); echo '</pre><hr>';
 $search = array(array('id' => 19), array('id' => 15),);
 $sub_tree = $tree->searchInArrayGetInTree($search);
 echo '<pre>$sub_tree = '; print_r($sub_tree); echo '</pre><hr>';
+
+$search = array(array('id' => 'lorem ipsum ...'),);
+$sub_tree = $tree->searchInArrayGetInTree($search, 'id', 'custom_field');
+echo '<pre>$sub_tree(lorem ipsum) = '; print_r($sub_tree); echo '</pre><hr>';
 
 $array = new array_from_tree($_tree);
 $array = $array->getArray('name', SORT_DESC);

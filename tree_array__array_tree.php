@@ -121,7 +121,7 @@ class tree_array__array_tree {
 		
 		foreach ($ids as $id) {
 			foreach ($this->a as $data) {
-				if ($data[$id_field] == $id[$ids_id_field]) { $t[] = $data; }
+				if (isset($data[$id_field], $id[$ids_id_field]) && $data[$id_field] == $id[$ids_id_field]) { $t[] = $data; }
 			}
 		}
 		
