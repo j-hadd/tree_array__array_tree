@@ -33,16 +33,19 @@ $db_data = array(
 
 shuffle($db_data);
 
-echo '<pre>$db_data = '; print_r($db_data); echo '</pre>';
+
+echo '<pre>$db_data = '; print_r($db_data); echo '</pre><hr>';
 
 $tree = new tree_from_array($db_data);
-$tree = $tree->getTree('name');
+$_tree = $tree->getTree('name');
+echo '<pre>$tree = '; print_r($_tree); echo '</pre><hr>';
 
-echo '<pre>$tree = '; print_r($tree); echo '</pre>';
+$search = array(array('id' => 19), array('id' => 15),);
+$sub_tree = $tree->searchInArrayGetInTree($search);
+echo '<pre>$sub_tree = '; print_r($sub_tree); echo '</pre><hr>';
 
-$array = new array_from_tree($tree);
+$array = new array_from_tree($_tree);
 $array = $array->getArray('name', SORT_DESC);
-
 echo '<pre>$array = '; print_r($array); echo '</pre>';
 
 ?>

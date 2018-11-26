@@ -85,6 +85,69 @@ class tree_array__array_tree {
 	
 	
 	
+	
+	
+	/**
+	 * searchInArrayGetInTree
+	 *
+	 * @param $ids An array of values to find
+	 * @param $ids_id_field [optional] the name of the field used in the research values array ($ids)
+	 * @param $id_field the name of the field used in data ($this->a)
+	 */
+	function searchInArrayGetInTree ($ids, $ids_id_field = 'id', $id_field = 'id') {
+		$t = $this->searchInArray($ids, $ids_id_field, $id_field);
+		
+		$t = $this->treeFromArray(false, $t);
+		
+		return $t;
+	}
+	
+	
+	
+	
+	
+	/**
+	 * searchInArray
+	 * search in $this->a the $ids values 
+	 *
+	 * @param $ids An array of values to find
+	 * @param $ids_id_field [optional] the name of the field used in the research values array ($ids)
+	 * @param $id_field the name of the field used in data ($this->a)
+	 */
+	function searchInArray ($ids, $ids_id_field = 'id', $id_field = 'id') {
+		$t = array();
+		
+		$this->sortArray($this->a, $this->parent_field, SORT_DESC);
+		
+		foreach ($ids as $id) {
+			foreach ($this->a as $data) {
+				if ($data[$id_field] == $id[$ids_id_field]) { $t[] = $data; }
+			}
+		}
+		
+		$this->getParents($t);
+		
+		return $t;
+	}
+	
+	
+	
+	
+	
+	/**
+	 * getParents
+	 * add in $array the parents of the already present values
+	 *
+	 * @param $array An array of values to add their parents
+	 */
+	function getParents (&$array) {
+		foreach ($array as $data) {
+			if ($data[$this->parent_field] > $this->parent_root_id) { $array = array_merge($array,$this->searchInArrayGetInTree(array(array('id' => $data[$this->parent_field])))); }
+		}
+	}
+	
+	
+	
 	/**
 	 * getArray
 	 *
@@ -124,6 +187,78 @@ class tree_array__array_tree {
 	
 	
 	/**
+	 * treeFromArray
+	 * Make a tree from an array
+	 *
+	 * @param $set_this_t [optional] true to set $this->t
+	 * @param $array [optional] the source array 
+	 */
+	function treeFromArray ($set_this_t = true, $array = false) {
+		$this_t = array();
+		
+		$array = $array === false ? $this->a : $array;
+		
+		$this->sortArray($array, $this->parent_field);
+		
+		foreach ($array as $v) {
+			$parent_id = isset($v[$this->parent_field]) ? $v[$this->parent_field] : $this->parent_root_id;
+			if ($parent_id > $this->parent_root_id) { $this->findIdInTreeAndAddChild($this_t, $parent_id, $v); } 
+			else { $this_t[] = $v; }
+		}
+		
+		if ($set_this_t === true) { $this->t = $this_t; }
+		
+		return $this_t;
+	}
+	
+	
+
+	/**
+	 * findIdInTreeAndAddChild
+	 * Add an array record in his parent
+	 *
+	 * @param $tree the tree
+	 * @param $id the parent id
+	 * @param $child the child data
+	 */
+	function findIdInTreeAndAddChild (&$tree, $id, $child) {
+		foreach ($tree as &$data) {
+			if ($data[$this->id_field] == $id) {
+				if (!isset($data[$this->children_field])) { $data[$this->children_field] = array(); }
+				$data[$this->children_field][] = $child;
+				return true;
+			} 
+			else if (isset($data[$this->children_field]) && $this->findIdInTreeAndAddChild($data[$this->children_field], $id, $child)) { return true; } 
+		}
+		return false;
+	}
+	
+	
+	
+	/**
+	 * arrayFromTree
+	 * Make an array from a tree
+	 *
+	 * @param $this_a the array to set
+	 * @param $tree source tree
+	 * @param $set_this_a[optional] true to set $this->a
+	 */
+	function arrayFromTree (&$this_a, $tree, $set_this_a = true) {
+		foreach ($tree as $v) {
+			if (isset($v[$this->children_field])) { $this->arrayFromTree($this_a, $v[$this->children_field]); }
+			$a = $v;
+			unset($a[$this->children_field]);
+			$this_a[] = $a;
+		}
+		
+		if ($set_this_a === true) { $this->a = $this_a; }
+		
+		return $this_a;
+	}
+	
+	
+	
+	/**
 	 * error
 	 *
 	 * @param $msg the error message
@@ -144,44 +279,7 @@ class tree_from_array extends tree_array__array_tree {
 	 */
 	function __construct ($array, $cfg = array()) { 
 		parent::__construct($array, 'array', $cfg);
-		$this->sortArray($this->a, $this->parent_field);
 		$this->treeFromArray();
-	}
-	
-	
-	
-	/**
-	 * treeFromArray
-	 *
-	 * Make a tree from an array
-	 */
-	function treeFromArray () {
-		$this->t = array();
-		foreach ($this->a as $v) {
-			$parent_id = isset($v[$this->parent_field]) ? $v[$this->parent_field] : $this->parent_root_id;
-			if ($parent_id > $this->parent_root_id) { $this->findIdInTreeAndAddChild($this->t, $parent_id, $v); } 
-			else { $this->t[] = $v; }
-		}
-		return $this->t;
-	}
-	
-	
-
-	/**
-	 * findIdInTreeAndAddChild
-	 *
-	 * Add an array record in his parent
-	 */
-	function findIdInTreeAndAddChild (&$tree, $id, $child) {
-		foreach ($tree as &$data) {
-			if ($data[$this->id_field] == $id) {
-				if (!isset($data[$this->children_field])) { $data[$this->children_field] = array(); }
-				$data[$this->children_field][] = $child;
-				return true;
-			} 
-			else if (isset($data[$this->children_field]) && $this->findIdInTreeAndAddChild($data[$this->children_field], $id, $child)) { return true; } 
-		}
-		return false;
 	}
 }
 
@@ -197,23 +295,7 @@ class array_from_tree extends tree_array__array_tree {
 	 */
 	function __construct ($tree, $cfg = array()) {
 		parent::__construct($tree, 'tree', $cfg);
-		$this->arrayFromTree($this->t);
-	}
-	
-	
-	
-	/**
-	 * arrayFromTree
-	 *
-	 * Make an array from a tree
-	 */
-	function arrayFromTree ($tree) {
-		foreach ($tree as $v) {
-			if (isset($v[$this->children_field])) { $this->arrayFromTree($v[$this->children_field]); }
-			$a = $v;
-			unset($a[$this->children_field]);
-			$this->a[] = $a;
-		}
+		$this->arrayFromTree($this->a, $this->t);
 	}
 }
 
