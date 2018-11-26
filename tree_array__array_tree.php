@@ -139,10 +139,14 @@ class tree_array__array_tree {
 	 * add in $array the parents of the already present values
 	 *
 	 * @param $array An array of values to add their parents
+	 * @param $ids_id_field [optional] the name of the field used in the research values array ($ids)
+	 * @param $id_field the name of the field used in data ($this->a)
 	 */
-	function getParents (&$array) {
+	function getParents (&$array, $ids_id_field = 'id', $id_field = 'id') {
 		foreach ($array as $data) {
-			if ($data[$this->parent_field] > $this->parent_root_id) { $array = array_merge($array,$this->searchInArrayGetInTree(array(array('id' => $data[$this->parent_field])))); }
+			if ($data[$this->parent_field] > $this->parent_root_id) { 
+				$array = array_merge($array, $this->searchInArray(array(array($ids_id_field => $data[$this->parent_field]),), $ids_id_field, $id_field)); 
+			}
 		}
 	}
 	
