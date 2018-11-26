@@ -26,7 +26,7 @@ $db_data = array(
 	array('id' => 9, 	'name' => '3.1', 		'parent' => 3,),
 	array('id' => 15, 	'name' => '3.2', 		'parent' => 3,),
 	array('id' => 13, 	'name' => '3.2.1', 		'parent' => 15, 'custom_field' => 'lorem ipsum ...',),
-	array('id' => 14, 	'name' => '3.3', 		'parent' => 3,),
+	array('id' => 14, 	'name' => '3.3', 		'parent' => 3, 'custom_field' => 'lorem ipsum ...',),
 	//array('id' => 20, 'name' => '', 'parent' => 0,),
 	
 );
@@ -45,7 +45,7 @@ $sub_tree = $tree->searchInArrayGetInTree($search);
 echo '<pre>$sub_tree = '; print_r($sub_tree); echo '</pre><hr>';
 
 $search = array(array('id' => 'lorem ipsum ...'),);
-$sub_tree = $tree->searchInArrayGetInTree($search, 'id', 'custom_field');
+$sub_tree = $tree->searchInArrayGetInTree($search, 'id', 'custom_field', 'name');
 echo '<pre>$sub_tree(lorem ipsum) = '; print_r($sub_tree); echo '</pre><hr>';
 
 $array = new array_from_tree($_tree);
