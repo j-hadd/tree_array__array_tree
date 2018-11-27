@@ -52,7 +52,7 @@ class tree_array__array_tree {
 	 * @param $format the original data format
 	 * @param $cfg [optional] this element configuration
 	 */
-	function __construct ($origin, $format, $cfg = array()) {
+	public function __construct ($origin, $format, $cfg = array()) {
 		if ($format === 'array' || $format === 'tree') { 
 			$this->t = $origin;
 			
@@ -73,14 +73,77 @@ class tree_array__array_tree {
 	
 	
 	/**
+	 * treeFromArray
+	 * Make a tree from an array
+	 *
+	 * @param $set_this_t [optional] true to set $this->t
+	 * @param $array [optional] the source array 
+	 */
+	public function treeFromArray ($set_this_t = true, $array = false) {
+		$this_t = array();
+		
+		$array = $array === false ? $this->a : $array;
+		
+		$this->sortArray($array, $this->parent_field);
+		
+		foreach ($array as $v) {
+			$parent_id = isset($v[$this->parent_field]) ? $v[$this->parent_field] : $this->parent_root_id;
+			if ($parent_id > $this->parent_root_id) { $this->findIdInTreeAndAddChild($this_t, $parent_id, $v); } 
+			else { $this_t[] = $v; }
+		}
+		
+		if ($set_this_t === true) { $this->t = $this_t; }
+		
+		return $this_t;
+	}
+	
+	
+	
+	/**
+	 * arrayFromTree
+	 * Make an array from a tree
+	 *
+	 * @param $this_a the array to set
+	 * @param $tree source tree
+	 * @param $set_this_a[optional] true to set $this->a
+	 */
+	public function arrayFromTree (&$this_a, $tree, $set_this_a = true) {
+		foreach ($tree as $v) {
+			if (isset($v[$this->children_field])) { $this->arrayFromTree($this_a, $v[$this->children_field]); }
+			$a = $v;
+			unset($a[$this->children_field]);
+			$this_a[] = $a;
+		}
+		
+		if ($set_this_a === true) { $this->a = $this_a; }
+		
+		return $this_a;
+	}
+	
+	
+	
+	/**
 	 * getTree
 	 *
 	 * @param $sort [optional] the field used to make sorting
 	 * @param $direction [optional] the sorting direction
 	 */
-	function getTree ($sort = false, $direction = SORT_ASC) { 
+	public function getTree ($sort = false, $direction = SORT_ASC) { 
 		if ($sort !== false) { $this->sortTree($this->t, $sort, $direction); }
 		return $this->t; 
+	}
+	
+	
+	
+	/**
+	 * getArray
+	 *
+	 * @param $sort [optional] the field used to make sorting
+	 * @param $direction [optional] the sorting direction
+	 */
+	public function getArray ($sort = false, $direction = SORT_ASC) { 
+		if ($sort !== false) { $this->sortArray($this->a, $sort, $direction); }
+		return $this->a; 
 	}
 	
 	
@@ -93,7 +156,7 @@ class tree_array__array_tree {
 	 * @param $ids An array of values to find
 	 * @param $cfg [optional] the configuration options
 	 */
-	function searchInArrayGetInTree ($ids, $cfg = array()) {
+	public function searchInArrayGetInTree ($ids, $cfg = array()) {
 		$ids_id_field = isset($cfg['ids_id_field']) ? $cfg['ids_id_field'] : 'id'; /* the name of the field used in the research values array ($ids) */
 		$id_field = isset($cfg['id_field']) ? $cfg['id_field'] : 'id'; /* the name of the field used in data ($this->a) */
 		$sort = isset($cfg['sort']) ? $cfg['sort'] : false; /* the field used to make sorting */
@@ -120,7 +183,7 @@ class tree_array__array_tree {
 	 * @param $ids_id_field [optional] the name of the field used in the research values array ($ids)
 	 * @param $id_field the name of the field used in data ($this->a)
 	 */
-	function searchInArray ($ids, $ids_id_field = 'id', $id_field = 'id') {
+	public function searchInArray ($ids, $ids_id_field = 'id', $id_field = 'id') {
 		$t = array();
 		
 		$this->sortArray($this->a, $this->parent_field, SORT_DESC);
@@ -148,7 +211,7 @@ class tree_array__array_tree {
 	 * @param $ids_id_field [optional] the name of the field used in the research values array ($ids)
 	 * @param $id_field the name of the field used in data ($this->a)
 	 */
-	function getParents (&$array, $ids_id_field = 'id', $id_field = 'id') {
+	public function getParents (&$array, $ids_id_field = 'id', $id_field = 'id') {
 		foreach ($array as $data) {
 			if ($data[$this->parent_field] > $this->parent_root_id && !$this->alreadyInArray($array, $data[$this->parent_field])) { 
 				$array = array_merge($array, $this->searchInArray(array(array($ids_id_field => $data[$this->parent_field]),), $ids_id_field, $id_field)); 
@@ -167,25 +230,12 @@ class tree_array__array_tree {
 	 * @param $_data the data to check for
 	 * @param $id_field the name of the field used in array
 	 */
-	function alreadyInArray ($array, $_data, $id_field = 'id') {
+	public function alreadyInArray ($array, $_data, $id_field = 'id') {
 		foreach ($array as $data) {
 			if ($data[$id_field] === $_data) { return true; }
 		}
 		
 		return false;
-	}
-	
-	
-	
-	/**
-	 * getArray
-	 *
-	 * @param $sort [optional] the field used to make sorting
-	 * @param $direction [optional] the sorting direction
-	 */
-	function getArray ($sort = false, $direction = SORT_ASC) { 
-		if ($sort !== false) { $this->sortArray($this->a, $sort, $direction); }
-		return $this->a; 
 	}
 	
 	
@@ -197,7 +247,7 @@ class tree_array__array_tree {
 	 * @param $field the field used to make sorting
 	 * @param $direction [optional] the sorting direction
 	 */
-	function sortTree (&$tree, $field, $direction = SORT_ASC) {
+	public function sortTree (&$tree, $field, $direction = SORT_ASC) {
 		$this->sortArray ($tree, $field, $direction);
 		foreach ($tree as &$data) { if (isset($data[$this->children_field])) { $this->sortTree($data[$this->children_field], $field, $direction); }}
 	}
@@ -211,34 +261,7 @@ class tree_array__array_tree {
 	 * @param $field the field used to make sorting
 	 * @param $direction [optional] the sorting direction
 	 */
-	function sortArray (&$array, $field, $direction = SORT_ASC) { array_multisort(array_column($array, $field), $direction, $array); }
-	
-	
-	
-	/**
-	 * treeFromArray
-	 * Make a tree from an array
-	 *
-	 * @param $set_this_t [optional] true to set $this->t
-	 * @param $array [optional] the source array 
-	 */
-	function treeFromArray ($set_this_t = true, $array = false) {
-		$this_t = array();
-		
-		$array = $array === false ? $this->a : $array;
-		
-		$this->sortArray($array, $this->parent_field);
-		
-		foreach ($array as $v) {
-			$parent_id = isset($v[$this->parent_field]) ? $v[$this->parent_field] : $this->parent_root_id;
-			if ($parent_id > $this->parent_root_id) { $this->findIdInTreeAndAddChild($this_t, $parent_id, $v); } 
-			else { $this_t[] = $v; }
-		}
-		
-		if ($set_this_t === true) { $this->t = $this_t; }
-		
-		return $this_t;
-	}
+	public function sortArray (&$array, $field, $direction = SORT_ASC) { array_multisort(array_column($array, $field), $direction, $array); }
 	
 	
 
@@ -250,7 +273,7 @@ class tree_array__array_tree {
 	 * @param $id the parent id
 	 * @param $child the child data
 	 */
-	function findIdInTreeAndAddChild (&$tree, $id, $child) {
+	public function findIdInTreeAndAddChild (&$tree, $id, $child) {
 		foreach ($tree as &$data) {
 			if ($data[$this->id_field] == $id) {
 				if (!isset($data[$this->children_field])) { $data[$this->children_field] = array(); }
@@ -265,34 +288,11 @@ class tree_array__array_tree {
 	
 	
 	/**
-	 * arrayFromTree
-	 * Make an array from a tree
-	 *
-	 * @param $this_a the array to set
-	 * @param $tree source tree
-	 * @param $set_this_a[optional] true to set $this->a
-	 */
-	function arrayFromTree (&$this_a, $tree, $set_this_a = true) {
-		foreach ($tree as $v) {
-			if (isset($v[$this->children_field])) { $this->arrayFromTree($this_a, $v[$this->children_field]); }
-			$a = $v;
-			unset($a[$this->children_field]);
-			$this_a[] = $a;
-		}
-		
-		if ($set_this_a === true) { $this->a = $this_a; }
-		
-		return $this_a;
-	}
-	
-	
-	
-	/**
 	 * error
 	 *
 	 * @param $msg the error message
 	 */
-	function error ($msg) { die('ERROR tree_array__array_tree { msg: ' . $msg . ' }'); }
+	public function error ($msg) { die('ERROR tree_array__array_tree { msg: ' . $msg . ' }'); }
 	
 }
 
@@ -306,7 +306,7 @@ class tree_from_array extends tree_array__array_tree {
 	 * @param $array the original data
 	 * @param $cfg [optional] this element configuration
 	 */
-	function __construct ($array, $cfg = array()) { 
+	public function __construct ($array, $cfg = array()) { 
 		parent::__construct($array, 'array', $cfg);
 		$this->treeFromArray();
 	}
@@ -322,7 +322,7 @@ class array_from_tree extends tree_array__array_tree {
 	 * @param $tree the original data
 	 * @param $cfg [optional] this element configuration
 	 */
-	function __construct ($tree, $cfg = array()) {
+	public function __construct ($tree, $cfg = array()) {
 		parent::__construct($tree, 'tree', $cfg);
 		$this->arrayFromTree($this->a, $this->t);
 	}
