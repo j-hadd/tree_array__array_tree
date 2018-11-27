@@ -4,40 +4,40 @@ use <code>$tree = new tree_from_array($array);</code> to transform an array to a
 use <code>$array = new array_from_tree($tree);</code> to transform a tree to an array
 
 # functions 
-##treeFromArray 
+**treeFromArray 
 Translate an array into a tree
 
-##arrayFromTree
+**arrayFromTree
 Translate a tree into an array
 
-##getTree
+**getTree
 Return the instance tree
 
-##getArray
+**getArray
 Return the instance array
 
-##searchInArrayGetInTree
+**searchInArrayGetInTree
 Retrieve some data in instance's array and return it with their parents as a tree
 
-##searchInArray
+**searchInArray
 Retrieve some data in instance's array and return it with their parents
 
-##getParents
+**getParents
 Retrieve some data's parents in instance's array
 
-##alreadyInArray
+**alreadyInArray
 True if the given array contain the passed data
 
-##sortTree
+**sortTree
 Sort the given tree
 
-##sortArray
+**sortArray
 Sort the given array
 
-##findIdInTreeAndAddChild
+**findIdInTreeAndAddChild
 Find some data in given tree and add to it the passed data as a child
 
-##error
+**error
 Display an error message and kill the execution
 
 see index.php for more info
